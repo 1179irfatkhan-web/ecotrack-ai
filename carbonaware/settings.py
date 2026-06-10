@@ -26,6 +26,9 @@ SECRET_KEY = 'django-insecure-a0!*95is+idx!w7mq@+b@+odk66nxjy$de*y2zhl&416tiwy3x
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    "https://ecotrack-ai-production.up.railway.app",
+]
 
 
 # Application definition

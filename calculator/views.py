@@ -7,7 +7,7 @@ from ai_coach.gemini_service import get_ai_advice
 
 
 
-@login_required
+
 def calculator_view(request):
 
     result = None

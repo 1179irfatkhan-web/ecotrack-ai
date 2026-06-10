@@ -1,9 +1,6 @@
 from django.shortcuts import render, redirect
-
 from django.contrib.auth import login
-
 from .forms import RegisterForm
-
 
 def register_view(request):
 
@@ -18,6 +15,9 @@ def register_view(request):
             login(request, user)
 
             return redirect('/dashboard/')
+
+        else:
+            print("FORM ERRORS:", form.errors)
 
     else:
 

@@ -125,7 +125,17 @@
         <form method="POST">
             {% csrf_token %}
 
-            {{ form.as_p }}
+            {% if form.errors %}
+
+<div class="alert alert-danger">
+
+    {{ form.errors }}
+
+</div>
+
+{% endif %}
+
+{{ form.as_p }}
 
             <button type="submit" class="btn btn-register w-100">
                 <i class="fas fa-user-check me-2"></i>
