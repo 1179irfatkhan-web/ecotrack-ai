@@ -1,210 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Simulator | EcoTrack AI</title>
 
-    <title>Carbon Reduction Simulator</title>
-
+    <!-- Google Fonts & Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
     <style>
-
-        body{
-            background: linear-gradient(135deg,#0f172a,#1e293b);
-            color:white;
-            min-height:100vh;
+        :root {
+            --primary-glow: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0) 50%);
+            --secondary-glow: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, rgba(15, 23, 42, 0) 50%);
         }
 
-        .glass-card{
-            background:rgba(255,255,255,0.08);
-            backdrop-filter:blur(15px);
-            border-radius:24px;
-            border:1px solid rgba(255,255,255,0.1);
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        input{
-            width:100%;
-            padding:12px;
-            border:none;
-            border-radius:12px;
-            margin-bottom:15px;
+        body::before {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            top: -100px;
+            right: -100px;
+            background: var(--primary-glow);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .btn-custom{
-            background:#22c55e;
-            border:none;
-            width:100%;
-            padding:14px;
-            font-weight:600;
+        body::after {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            bottom: -100px;
+            left: -100px;
+            background: var(--secondary-glow);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .hero{
-            padding:50px 0;
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 10;
         }
 
-        .result-card{
-            background:linear-gradient(135deg,#22c55e,#16a34a);
-            border-radius:24px;
+        .navbar-brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
         }
 
+        .nav-link {
+            font-weight: 500;
+            color: #cbd5e1 !important;
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        main {
+            flex-grow: 1;
+            z-index: 1;
+            padding: 40px 0;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            background-color: rgba(15, 23, 42, 0.45) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: white !important;
+            border-radius: 12px;
+            padding: 10px 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 14px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+        }
+
+        /* Result Section */
+        .result-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .savings-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .reduction-percentage {
+            color: #10b981;
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #475569;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 10;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
     </style>
-
 </head>
 
 <body>
 
-<div class="container hero">
-
-    <div class="text-center mb-5">
-
-        <h1 class="display-4 fw-bold">
-            🌍 Carbon Reduction Simulator
-        </h1>
-
-        <p>
-            Discover how much CO₂ you can save by changing your lifestyle.
-        </p>
-
-        <a href="/" class="btn btn-outline-light">
-            Calculator
-        </a>
-
-        <a href="/dashboard/" class="btn btn-success">
-            Dashboard
-        </a>
-
-    </div>
-
-    <form method="POST">
-
-        {% csrf_token %}
-
-        <div class="row">
-
-            <div class="col-lg-6 mb-4">
-
-                <div class="glass-card p-4">
-
-                    <h3 class="mb-4">
-                        📍 Current Lifestyle
-                    </h3>
-
-                    <label>Transport (km)</label>
-                    {{ form.current_transport }}
-
-                    <label>Electricity Units</label>
-                    {{ form.current_electricity }}
-
-                    <label>Meat Meals</label>
-                    {{ form.current_meat }}
-
-                    <label>Waste (kg)</label>
-                    {{ form.current_waste }}
-
+    <!-- Accessible Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Main Navigation">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/dashboard/" aria-label="EcoTrack AI Home">
+                <span class="me-2 text-success" aria-hidden="true">🌱</span> EcoTrack AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/">📊 Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/simulator/" aria-current="page">🌍 Carbon Simulator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">🌱 Calculator</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="text-secondary me-3 d-none d-md-inline" id="user-status-text">
+                        Logged in as <strong class="text-white">{{ request.user.username }}</strong>
+                    </span>
+                    <form action="{% url 'logout' %}" method="post" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" aria-label="Sign out of EcoTrack AI">
+                            <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i> Logout
+                        </button>
+                    </form>
                 </div>
-
             </div>
+        </div>
+    </nav>
 
-            <div class="col-lg-6 mb-4">
-
-                <div class="glass-card p-4">
-
-                    <h3 class="mb-4">
-                        🚀 Improved Lifestyle
-                    </h3>
-
-                    <label>Transport (km)</label>
-                    {{ form.future_transport }}
-
-                    <label>Electricity Units</label>
-                    {{ form.future_electricity }}
-
-                    <label>Meat Meals</label>
-                    {{ form.future_meat }}
-
-                    <label>Waste (kg)</label>
-                    {{ form.future_waste }}
-
-                </div>
-
-            </div>
-
+    <!-- Main Content Area -->
+    <main class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-white mb-2">
+                🌍 Carbon Reduction Simulator
+            </h1>
+            <p class="text-secondary lead mx-auto" style="max-width: 600px;">
+                Input your current lifestyle metrics and compare them with simulated changes to see your prospective CO₂ reduction.
+            </p>
         </div>
 
-        <button class="btn btn-custom text-white">
-            Calculate Savings
-        </button>
+        <form method="POST" id="simulatorForm" autocomplete="on">
+            {% csrf_token %}
 
-    </form>
+            <div class="row">
+                <!-- Current Lifestyle Column -->
+                <div class="col-lg-6 mb-4">
+                    <section class="glass-card h-100" aria-labelledby="current-lifestyle-title">
+                        <h2 class="fs-4 text-white mb-4 d-flex align-items-center" id="current-lifestyle-title">
+                            <span class="text-secondary me-2"><i class="fas fa-history" aria-hidden="true"></i></span> 1. Current Lifestyle
+                        </h2>
 
-</div>
+                        <!-- Transport (km) -->
+                        <div class="mb-3">
+                            <label for="id_current_transport" class="form-label">Transport Travel (km/week)</label>
+                            <input type="number" step="any" min="0" name="current_transport" id="id_current_transport" class="form-control" 
+                                   placeholder="e.g. 150" required
+                                   value="{% if form.current_transport.value is not None %}{{ form.current_transport.value }}{% endif %}">
+                        </div>
 
-{% if current_total %}
+                        <!-- Electricity Units -->
+                        <div class="mb-3">
+                            <label for="id_current_electricity" class="form-label">Electricity Consumption (kWh/month)</label>
+                            <input type="number" step="any" min="0" name="current_electricity" id="id_current_electricity" class="form-control" 
+                                   placeholder="e.g. 300" required
+                                   value="{% if form.current_electricity.value is not None %}{{ form.current_electricity.value }}{% endif %}">
+                        </div>
 
-<div id="result-section" class="container mb-5">
+                        <!-- Meat Meals -->
+                        <div class="mb-3">
+                            <label for="id_current_meat" class="form-label">Dietary Meat Meals (Meals/week)</label>
+                            <input type="number" min="0" name="current_meat" id="id_current_meat" class="form-control" 
+                                   placeholder="e.g. 10" required
+                                   value="{% if form.current_meat.value is not None %}{{ form.current_meat.value }}{% endif %}">
+                        </div>
 
-    <div class="result-card p-5 text-center">
+                        <!-- Waste (kg) -->
+                        <div class="mb-3">
+                            <label for="id_current_waste" class="form-label">Household Waste Output (kg/week)</label>
+                            <input type="number" step="any" min="0" name="current_waste" id="id_current_waste" class="form-control" 
+                                   placeholder="e.g. 20" required
+                                   value="{% if form.current_waste.value is not None %}{{ form.current_waste.value }}{% endif %}">
+                        </div>
+                    </section>
+                </div>
 
-        <h2 class="mb-4">
-            🌱 Sustainability Impact
-        </h2>
+                <!-- Improved Lifestyle Column -->
+                <div class="col-lg-6 mb-4">
+                    <section class="glass-card h-100" aria-labelledby="improved-lifestyle-title">
+                        <h2 class="fs-4 text-success mb-4 d-flex align-items-center" id="improved-lifestyle-title">
+                            <span class="text-success me-2"><i class="fas fa-leaf" aria-hidden="true"></i></span> 2. Simulated Shift
+                        </h2>
 
-        <div class="row">
+                        <!-- Transport (km) -->
+                        <div class="mb-3">
+                            <label for="id_future_transport" class="form-label">Simulated Transport Travel (km/week)</label>
+                            <input type="number" step="any" min="0" name="future_transport" id="id_future_transport" class="form-control" 
+                                   placeholder="e.g. 80" required
+                                   value="{% if form.future_transport.value is not None %}{{ form.future_transport.value }}{% endif %}">
+                        </div>
 
-            <div class="col-md-3">
-                <h5>Current</h5>
-                <h2>{{ current_total }}</h2>
-                <small>kg CO₂</small>
+                        <!-- Electricity Units -->
+                        <div class="mb-3">
+                            <label for="id_future_electricity" class="form-label">Simulated Electricity (kWh/month)</label>
+                            <input type="number" step="any" min="0" name="future_electricity" id="id_future_electricity" class="form-control" 
+                                   placeholder="e.g. 200" required
+                                   value="{% if form.future_electricity.value is not None %}{{ form.future_electricity.value }}{% endif %}">
+                        </div>
+
+                        <!-- Meat Meals -->
+                        <div class="mb-3">
+                            <label for="id_future_meat" class="form-label">Simulated Meat Meals (Meals/week)</label>
+                            <input type="number" min="0" name="future_meat" id="id_future_meat" class="form-control" 
+                                   placeholder="e.g. 4" required
+                                   value="{% if form.future_meat.value is not None %}{{ form.future_meat.value }}{% endif %}">
+                        </div>
+
+                        <!-- Waste (kg) -->
+                        <div class="mb-3">
+                            <label for="id_future_waste" class="form-label">Simulated Waste Output (kg/week)</label>
+                            <input type="number" step="any" min="0" name="future_waste" id="id_future_waste" class="form-control" 
+                                   placeholder="e.g. 10" required
+                                   value="{% if form.future_waste.value is not None %}{{ form.future_waste.value }}{% endif %}">
+                        </div>
+                    </section>
+                </div>
             </div>
 
-            <div class="col-md-3">
-                <h5>Improved</h5>
-                <h2>{{ future_total }}</h2>
-                <small>kg CO₂</small>
+            <div class="row justify-content-center mt-3 mb-5">
+                <div class="col-md-6 text-center">
+                    <button type="submit" class="btn btn-custom w-100 fs-5">
+                        <i class="fas fa-sync me-2" aria-hidden="true"></i> Calculate Savings Simulation
+                    </button>
+                </div>
             </div>
+        </form>
 
-            <div class="col-md-3">
-                <h5>Saved</h5>
-                <h2>{{ savings }}</h2>
-                <small>kg CO₂</small>
+        <!-- Simulation Result Presentation -->
+        {% if current_total is not None %}
+        <section id="result-section" class="row justify-content-center mb-5" aria-labelledby="simulation-results-title">
+            <div class="col-lg-10">
+                <div class="result-card">
+                    <h2 class="fs-4 text-center text-white mb-4" id="simulation-results-title">
+                        📊 Simulated Green Shift Analysis
+                    </h2>
+                    
+                    <div class="row g-4 align-items-center mb-4">
+                        <div class="col-md-6 text-center text-md-start border-end border-secondary border-opacity-20 pe-md-5">
+                            <h3 class="fs-5 text-secondary">PROSPECTIVE REDUCTION</h3>
+                            <div class="reduction-percentage mb-2" aria-label="Calculated emission cut percentage">{{ percentage }}%</div>
+                            <div class="savings-badge" aria-label="Carbon mass saved">
+                                <i class="fas fa-cloud-arrow-down me-2" aria-hidden="true"></i> Saved {{ savings }} kg CO₂ / week
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 ps-md-5">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="metric-box">
+                                        <h4 class="fs-6 text-secondary mb-1">CURRENT WEEKLY</h4>
+                                        <div class="fs-3 fw-bold text-white">{{ current_total }}</div>
+                                        <small class="text-secondary">kg CO₂</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-box">
+                                        <h4 class="fs-6 text-secondary mb-1">SIMULATED WEEKLY</h4>
+                                        <div class="fs-3 fw-bold text-success">{{ future_total }}</div>
+                                        <small class="text-secondary">kg CO₂</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 p-3 text-center text-success">
+                        <i class="fas fa-thumbs-up me-2" aria-hidden="true"></i>
+                        Simulated lifestyle shifts yield <strong>{{ savings }} kg CO₂</strong> saved. Consistent reduction over a year equals planting approximately <strong>{% widthratio savings 1 2 %}</strong> urban trees!
+                    </div>
+                </div>
             </div>
+        </section>
+        {% endif %}
+    </main>
 
-            <div class="col-md-3">
-                <h5>Reduction</h5>
-                <h2>{{ percentage }}%</h2>
-                <small>Emission Cut</small>
-            </div>
+    <footer>
+        <p>&copy; 2026 EcoTrack AI • Sustainable Living Awareness Platform</p>
+    </footer>
 
-        </div>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-    </div>
-
-</div>
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const result =
-        document.getElementById("result-section");
-
-    if(result){
-
-        result.scrollIntoView({
-            behavior:"smooth"
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const resultSection = document.getElementById("result-section");
+            if (resultSection) {
+                setTimeout(() => {
+                    resultSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }, 300);
+            }
         });
-
-    }
-
-});
-
-</script>
-
-{% endif %}
+    </script>
 
 </body>
-
 </html>

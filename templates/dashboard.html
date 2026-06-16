@@ -1,254 +1,678 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carbon Dashboard</title>
+    <title>Dashboard | EcoTrack AI</title>
 
+    <!-- Google Fonts & Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-
-        body{
-            background:#f4f7fa;
+        :root {
+            --primary-glow: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(15, 23, 42, 0) 50%);
+            --secondary-glow: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, rgba(15, 23, 42, 0) 50%);
         }
 
-        .navbar{
-            background:linear-gradient(135deg,#198754,#0d6efd);
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .stat-card{
-            border:none;
-            border-radius:20px;
-            transition:.3s;
+        body::before {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            top: -100px;
+            right: -100px;
+            background: var(--primary-glow);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .stat-card:hover{
-            transform:translateY(-5px);
+        body::after {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            bottom: -100px;
+            left: -100px;
+            background: var(--secondary-glow);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .card-shadow{
-            box-shadow:0 10px 25px rgba(0,0,0,.08);
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 10;
         }
 
-        .score-circle{
-            width:160px;
-            height:160px;
-            border-radius:50%;
-            background:#198754;
-            color:white;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-direction:column;
-            margin:auto;
+        .navbar-brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
         }
 
-        .table-card{
-            border-radius:20px;
+        .nav-link {
+            font-weight: 500;
+            color: #cbd5e1 !important;
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            transition: all 0.2s;
         }
 
+        .nav-link:hover, .nav-link.active {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        main {
+            flex-grow: 1;
+            z-index: 1;
+            padding: 40px 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            height: 100%;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            border-left: 4px solid #10b981;
+        }
+
+        .stat-card-info {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .stat-card-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            border-left: 4px solid #f59e0b;
+        }
+
+        .stat-card-purple {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+            border-left: 4px solid #a855f7;
+        }
+
+        /* Circular Score Gauge */
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%);
+            border: 3px solid #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin: auto;
+        }
+
+        .score-val {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1;
+        }
+
+        /* Progress Bars */
+        .progress {
+            background-color: rgba(15, 23, 42, 0.5);
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .progress-bar-transport { background-color: #38bdf8; }
+        .progress-bar-electricity { background-color: #f59e0b; }
+        .progress-bar-food { background-color: #ef4444; }
+        .progress-bar-waste { background-color: #a855f7; }
+
+        /* Tables */
+        .table-responsive {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table {
+            background-color: transparent !important;
+            margin-bottom: 0;
+            color: #cbd5e1 !important;
+        }
+
+        .table th {
+            background-color: rgba(15, 23, 42, 0.8) !important;
+            color: white !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+            font-weight: 600;
+            padding: 14px 16px;
+        }
+
+        .table td {
+            background-color: rgba(30, 41, 59, 0.4) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover td {
+            background-color: rgba(30, 41, 59, 0.6) !important;
+        }
+
+        /* Buttons */
+        .btn-success-gradient {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-success-gradient:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #475569;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 10;
+        }
     </style>
-
 </head>
 
 <body>
 
-<nav class="navbar navbar-dark p-3">
-    <div class="container">
-        <span class="navbar-brand fw-bold">
-            🌱 Carbon Footprint Dashboard
-        </span>
-        <a href="/dashboard/report/"
-   class="btn btn-success">
+    <!-- Accessible Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Main Navigation">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/dashboard/" aria-label="EcoTrack AI Home">
+                <span class="me-2 text-success" aria-hidden="true">🌱</span> EcoTrack AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard/" aria-current="page">📊 Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/simulator/">🌍 Carbon Simulator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">🌱 Calculator</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="text-secondary me-3 d-none d-md-inline" id="user-status-text">
+                        Logged in as <strong class="text-white">{{ request.user.username }}</strong>
+                    </span>
+                    <form action="{% url 'logout' %}" method="post" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" aria-label="Sign out of EcoTrack AI">
+                            <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-   📄 Download Report
+    <!-- Main Dashboard Body -->
+    <main class="container">
+        
+        <!-- Welcome Title & Report Button -->
+        <header class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h1 class="display-6 fw-bold text-white mb-1">Personal Sustainability Dashboard</h1>
+                <p class="text-secondary mb-0">Track emissions, complete weekly reduction targets, and earn eco badges</p>
+            </div>
+            {% if records %}
+            <a href="/dashboard/report/" class="btn btn-success-gradient d-inline-flex align-items-center shadow-sm" aria-label="Download sustainability report in PDF format">
+                <i class="fas fa-file-pdf me-2" aria-hidden="true"></i> Download Report (PDF)
+            </a>
+            {% endif %}
+        </header>
 
-</a>
-    </div>
-</nav>
-
-<div class="container mt-4">
-
-    <div class="row g-4">
-
-        <div class="col-md-4">
-            <div class="card stat-card card-shadow bg-success text-white">
-                <div class="card-body">
-                    <h5>Total Records</h5>
-                    <h2>{{ records|length }}</h2>
+        {% if not records %}
+        <!-- EMPTY STATE CASE -->
+        <div class="row justify-content-center py-5">
+            <div class="col-lg-7 text-center">
+                <div class="glass-card py-5 px-4 shadow">
+                    <div class="fs-1 text-success mb-3" aria-hidden="true">🌱</div>
+                    <h2 class="h3 text-white mb-3">No Carbon Logs Found</h2>
+                    <p class="text-secondary mb-4 mx-auto" style="max-width: 480px;">
+                        To start tracking your carbon footprint and unlock recommendations, calculate your emissions using our conversion tool.
+                    </p>
+                    <a href="/" class="btn btn-success-gradient btn-lg px-4" aria-label="Calculate your first footprint">
+                        <i class="fas fa-calculator me-2" aria-hidden="true"></i> Calculate Your First Footprint
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card stat-card card-shadow bg-primary text-white">
-                <div class="card-body">
-                    <h5>Latest Footprint</h5>
-
-                    {% if records %}
-                    <h2>{{ records.0.total_carbon }}</h2>
-                    {% else %}
-                    <h2>0</h2>
-                    {% endif %}
+        {% else %}
+        <!-- STANDARD POPULATED CONTENT -->
+        
+        <!-- Impact Summary & KPI Cards Grid -->
+        <div class="row g-4 mb-4">
+            <!-- CO2 Saved -->
+            <div class="col-6 col-md-3">
+                <div class="stat-card stat-card-success">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-secondary small fw-semibold">CO₂ Saved</span>
+                        <span class="text-success"><i class="fas fa-cloud-arrow-down" aria-hidden="true"></i></span>
+                    </div>
+                    <h2 class="text-white fw-bold mb-0 fs-3">{{ impact.co2_saved }} <span class="fs-6 fw-normal text-secondary">kg</span></h2>
+                </div>
+            </div>
+            <!-- Trees Offset -->
+            <div class="col-6 col-md-3">
+                <div class="stat-card stat-card-info">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-secondary small fw-semibold">Trees Offset</span>
+                        <span class="text-info"><i class="fas fa-tree" aria-hidden="true"></i></span>
+                    </div>
+                    <h2 class="text-white fw-bold mb-0 fs-3">{{ trees }} <span class="fs-6 fw-normal text-secondary">trees</span></h2>
+                </div>
+            </div>
+            <!-- Average Footprint -->
+            <div class="col-6 col-md-3">
+                <div class="stat-card stat-card-warning">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-secondary small fw-semibold">Average Carbon</span>
+                        <span class="text-warning"><i class="fas fa-chart-bar" aria-hidden="true"></i></span>
+                    </div>
+                    <h2 class="text-white fw-bold mb-0 fs-3">{{ stats.avg_carbon }} <span class="fs-6 fw-normal text-secondary">kg</span></h2>
+                </div>
+            </div>
+            <!-- Reduction Progress -->
+            <div class="col-6 col-md-3">
+                <div class="stat-card stat-card-purple">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-secondary small fw-semibold">Reduction Rate</span>
+                        <span class="text-purple"><i class="fas fa-arrow-down-long" aria-hidden="true"></i></span>
+                    </div>
+                    <h2 class="text-white fw-bold mb-0 fs-3">{{ impact.reduction_pct }}% <span class="fs-6 fw-normal text-secondary">cut</span></h2>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card stat-card card-shadow bg-dark text-white">
-                <div class="card-body">
-                    <h5>Status</h5>
-                    <h2>Tracking</h2>
+        <!-- Benchmark Comparison & Weekly Improvements Notification -->
+        <div class="row g-4 mb-4">
+            <!-- Benchmark Card -->
+            <div class="col-md-6">
+                <div class="glass-card p-3 shadow-sm border border-secondary border-opacity-10">
+                    <h3 class="fs-6 text-secondary mb-2"><i class="fas fa-scale-balanced me-2 text-success" aria-hidden="true"></i>Carbon Benchmark Comparison</h3>
+                    <div class="d-flex align-items-center">
+                        <div class="fs-2 fw-bold text-white me-3">{{ latest.total_carbon }} kg CO₂</div>
+                        <div>
+                            {% if benchmark.status == 'below' %}
+                                <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-20 px-2 py-1">
+                                    <i class="fas fa-circle-chevron-down me-1" aria-hidden="true"></i>{{ benchmark.percentage }}% below baseline
+                                </span>
+                            {% elif benchmark.status == 'above' %}
+                                <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-20 px-2 py-1">
+                                    <i class="fas fa-circle-chevron-up me-1" aria-hidden="true"></i>{{ benchmark.percentage }}% above baseline
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary px-2 py-1">Equal to baseline</span>
+                            {% endif %}
+                            <small class="text-secondary d-block mt-1">Compared to country average (120.0 kg CO₂)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Improvements -->
+            <div class="col-md-6">
+                <div class="glass-card p-3 shadow-sm border border-secondary border-opacity-10">
+                    <h3 class="fs-6 text-secondary mb-2"><i class="fas fa-chart-line me-2 text-info" aria-hidden="true"></i>Weekly Improvement Status</h3>
+                    <div class="d-flex align-items-center">
+                        {% if weekly_improvement.status == 'no_history' %}
+                            <div class="text-secondary small py-1">Record another carbon log to compute historical changes.</div>
+                        {% else %}
+                            <div class="fs-2 fw-bold text-white me-3">
+                                {% if weekly_improvement.status == 'improved' %}-{% else %}+{% endif %}{{ weekly_improvement.improvement_pct }}%
+                            </div>
+                            <div>
+                                {% if weekly_improvement.status == 'improved' %}
+                                    <span class="text-success small fw-semibold"><i class="fas fa-arrow-trend-down me-1" aria-hidden="true"></i>Emissions reduced</span>
+                                {% else %}
+                                    <span class="text-danger small fw-semibold"><i class="fas fa-arrow-trend-up me-1" aria-hidden="true"></i>Emissions increased</span>
+                                {% endif %}
+                                <small class="text-secondary d-block mt-1">Compared to previous log: {{ weekly_improvement.previous_total }} kg CO₂</small>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
 
-    </div>
-
-    <div class="row mt-5">
-
-        <div class="col-lg-8">
-
-            <div class="card card-shadow p-4">
-
-                <h4 class="mb-4">
-                    Carbon Emission Trend
-                </h4>
-
-                <canvas id="carbonChart"></canvas>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-4">
-
-            <div class="card card-shadow p-4 text-center">
-
-                <h4>Sustainability Score</h4>
-
-                <div class="score-circle mt-3">
-
-                    <h1>82</h1>
-
-                    <small>/100</small>
-
+        <!-- Charts and Scoring Gauges -->
+        <div class="row g-4 mb-4">
+            <!-- Emisssion Trend Chart -->
+            <div class="col-lg-8">
+                <div class="glass-card shadow">
+                    <h2 class="fs-5 text-white mb-4">Carbon Emission Trend (Latest 15 Logs)</h2>
+                    <div style="position: relative; height:280px; width:100%;">
+                        <canvas id="carbonChart" aria-label="Line graph displaying carbon emission trends over time" role="img">Your carbon trend chart displays changes in your emissions history. A detailed description of this data is also listed in the history table below.</canvas>
+                    </div>
                 </div>
-
-                <p class="mt-3 text-success fw-bold">
-                    Excellent Progress
-                </p>
-
             </div>
 
+            <!-- Scorecard & Goals Progress -->
+            <div class="col-lg-4">
+                <div class="glass-card shadow text-center d-flex flex-column justify-content-between py-4">
+                    <h2 class="fs-5 text-white mb-2">Sustainability Score</h2>
+                    
+                    <div class="score-circle my-2">
+                        <div class="score-val">{{ sustainability_score }}</div>
+                        <small class="text-secondary" style="font-size:0.75rem;">/ 100</small>
+                    </div>
+
+                    <!-- Monthly Goal Progress -->
+                    <div class="px-3 my-2 text-start">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-semibold text-secondary">Monthly Carbon Target</span>
+                            <span class="small text-white fw-bold">{{ monthly_goal.current_total }} / {{ monthly_goal.goal }} kg</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-label="Monthly carbon target progress percentage" aria-valuenow="{{ monthly_goal.progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar {% if monthly_goal.status == 'on_track' %}bg-success{% else %}bg-danger{% endif %}" data-progress-width="{{ monthly_goal.progress_pct }}"></div>
+                        </div>
+                        <div class="text-center mt-1">
+                            <small class="text-secondary" style="font-size: 0.75rem;">
+                                {% if monthly_goal.status == 'on_track' %}
+                                    <span class="text-success"><i class="fas fa-circle-check me-1" aria-hidden="true"></i>On track</span> to remain below monthly threshold.
+                                {% else %}
+                                    <span class="text-danger"><i class="fas fa-circle-exclamation me-1" aria-hidden="true"></i>Exceeded</span> monthly target goal limit.
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if sustainability_score >= 80 %}
+                            <p class="text-success fw-bold mb-0"><i class="fas fa-medal me-1" aria-hidden="true"></i> Excellent Carbon Level</p>
+                        {% elif sustainability_score >= 50 %}
+                            <p class="text-warning fw-bold mb-0"><i class="fas fa-triangle-exclamation me-1" aria-hidden="true"></i> Moderate Impact</p>
+                        {% else %}
+                            <p class="text-danger fw-bold mb-0"><i class="fas fa-circle-exclamation me-1" aria-hidden="true"></i> Critical Footprint</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </div>
+        <!-- Tree Offset Visualization & Achievement Badges -->
+        <div class="row g-4 mb-4">
+            <!-- Tree Offset Visualization -->
+            <div class="col-lg-6">
+                <div class="glass-card shadow">
+                    <h2 class="fs-5 text-white mb-3">Tree Offset Visualization</h2>
+                    <p class="text-secondary small mb-4">Visual representation of offset trees needed to balance your latest emissions</p>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center p-4 bg-dark bg-opacity-20 rounded-4 mb-3">
+                        {% if trees > 0 %}
+                            {% for i in "x"|rjust:trees %}
+                                <span class="fs-1" title="Tree offset index" style="animation: pulse 2s infinite ease-in-out;">🌳</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-secondary small">0 trees required. Your emissions are net neutral!</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-center text-secondary small">
+                        Each 🌳 absorbs approximately 20 kg of carbon per year. You need <strong>{{ trees }} trees</strong> to offset your latest calculation.
+                    </div>
+                </div>
+            </div>
 
-    <div class="card mt-5 p-4 card-shadow">
+            <!-- Achievement Badges Card -->
+            <div class="col-lg-6">
+                <div class="glass-card shadow">
+                    <h2 class="fs-5 text-white mb-3">Sustainability Achievement Badges</h2>
+                    <p class="text-secondary small mb-4">Milestones achieved on your carbon reduction journey</p>
+                    
+                    <div class="row g-2">
+                        {% for badge in badges %}
+                            <div class="col-6">
+                                <div class="card bg-dark bg-opacity-35 border-0 p-3 text-center rounded-4 h-100 border-top border-{{ badge.color }} border-3">
+                                    <div class="fs-2 text-{{ badge.color }} mb-2"><i class="fas {{ badge.icon }}" aria-hidden="true"></i></div>
+                                    <h3 class="fs-6 text-white mb-1">{{ badge.title }}</h3>
+                                    <small class="text-secondary" style="font-size:0.75rem; line-height: 1.2;">{{ badge.desc }}</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-secondary small">No badges unlocked yet. Keep logging values to earn achievements.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <h4 class="mb-3">
-            Personalized Suggestions
-        </h4>
+        <!-- Category Breakdown and Personalized Targets -->
+        <div class="row g-4 mb-4">
+            <!-- Category Breakdown Progress Bars -->
+            <div class="col-lg-6">
+                <div class="glass-card shadow">
+                    <h2 class="fs-5 text-white mb-3">Latest Carbon Breakdown</h2>
+                    <p class="text-secondary small mb-4">Highest emitting sector: <strong class="text-white">{{ highest_sector }}</strong></p>
 
-        <ul>
-            <li>Use public transport twice a week</li>
-            <li>Reduce meat consumption</li>
-            <li>Switch to LED lighting</li>
-            <li>Track electricity consumption weekly</li>
-        </ul>
+                    {% for key, val in breakdown.items %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-semibold text-secondary">{{ key }}</span>
+                            <span class="small text-white fw-bold">{{ val.emissions }} kg ({{ val.percentage }}%)</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-label="{{ key }} emissions percentage" aria-valuenow="{{ val.percentage }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar {% if key == 'Transport' %}progress-bar-transport{% elif key == 'Electricity' %}progress-bar-electricity{% elif key == 'Food' %}progress-bar-food{% else %}progress-bar-waste{% endif %}" data-progress-width="{{ val.percentage }}"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-    </div>
+            <!-- Personalized Carbon Reduction Targets -->
+            <div class="col-lg-6">
+                <div class="glass-card shadow">
+                    <h2 class="fs-5 text-white mb-3">Weekly Carbon Reduction Targets</h2>
+                    <p class="text-secondary small mb-4">Personalized micro-goals based on your metrics</p>
+                    
+                    <div class="d-flex flex-column gap-3">
+                        {% for target in reduction_targets %}
+                            <div class="p-3 bg-dark bg-opacity-25 border border-secondary border-opacity-10 rounded-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h3 class="fs-6 text-white mb-0">{{ target.title }}</h3>
+                                    <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-20">{{ target.saved }}</span>
+                                </div>
+                                <p class="text-secondary small mb-0">{{ target.desc }}</p>
+                            </div>
+                        {% empty %}
+                            <div class="text-secondary small">Submit calculations to generate custom carbon reduction targets.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="card mt-5 p-4 card-shadow table-card">
+        <!-- Coach Tips & Historical Table -->
+        <div class="row g-4 mb-4">
+            <!-- AI Coach Tips -->
+            <div class="col-lg-12">
+                <div class="glass-card shadow">
+                    <h2 class="fs-5 text-white mb-3">AI Sustainability Coach Suggestions</h2>
+                    <p class="text-secondary small mb-4">Dynamic analysis based on your footprint records</p>
+                    
+                    <ul class="list-unstyled mb-0" id="tips-list">
+                        {% for recommendation in recommendations %}
+                        <li class="d-flex align-items-start mb-3">
+                            <span class="text-success me-2 mt-1" aria-hidden="true"><i class="fas fa-circle-check"></i></span>
+                            <span class="text-secondary" style="font-size:0.95rem;">{{ recommendation|safe }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-        <h4 class="mb-4">
-            Carbon Footprint History
-        </h4>
+        <!-- History Table Section -->
+        <div class="row">
+            <div class="col-12">
+                <section class="glass-card shadow" aria-labelledby="history-title">
+                    <h2 class="fs-5 text-white mb-4" id="history-title">Carbon Footprint History (Latest 15 Logs)</h2>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Transport (km)</th>
+                                    <th scope="col">Electricity (kWh)</th>
+                                    <th scope="col">Meat Meals</th>
+                                    <th scope="col">Waste (kg)</th>
+                                    <th scope="col">Total CO₂</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in records %}
+                                <tr>
+                                    <td>{{ record.created_at|date:"d M Y" }}</td>
+                                    <td>{{ record.transport_km }} km</td>
+                                    <td>{{ record.electricity_units }} kWh</td>
+                                    <td>{{ record.meat_meals }} meals</td>
+                                    <td>{{ record.waste_kg }} kg</td>
+                                    <td>
+                                        <span class="badge {% if record.total_carbon <= 40 %}bg-success{% elif record.total_carbon <= 80 %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill px-3 py-2">
+                                            {{ record.total_carbon }} kg
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
 
-        <table class="table table-hover">
+        {% endif %}
+    </main>
 
-            <thead>
+    <footer>
+        <p>&copy; 2026 EcoTrack AI • Sustainable Living Awareness Platform</p>
+    </footer>
 
-                <tr>
-                    <th>Date</th>
-                    <th>Transport</th>
-                    <th>Electricity</th>
-                    <th>Meals</th>
-                    <th>Waste</th>
-                    <th>Total CO₂</th>
-                </tr>
+    {% if records %}
+    <!-- Chart.js Trend Configuration -->
+    <script id="chart-data" type="application/json">
+        {{ chart_data_json|safe }}
+    </script>
+    <script>
+        const ctx = document.getElementById('carbonChart').getContext('2d');
+        const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+        const labels = chartData.map(item => item.date);
+        const carbonData = chartData.map(item => item.total_carbon);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Calculated Carbon CO2 (kg)',
+                    data: carbonData,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                    fill: true,
+                    borderWidth: 3,
+                    tension: 0.35,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.03)'
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.03)'
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    }
+                }
+            }
+        });
 
-            </thead>
-
-            <tbody>
-
-            {% for record in records %}
-
-                <tr>
-
-                    <td>{{ record.created_at|date:"d M Y" }}</td>
-                    <td>{{ record.transport_km }}</td>
-                    <td>{{ record.electricity_units }}</td>
-                    <td>{{ record.meat_meals }}</td>
-                    <td>{{ record.waste_kg }}</td>
-                    <td>
-                        <span class="badge bg-success">
-                            {{ record.total_carbon }}
-                        </span>
-                    </td>
-
-                </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-<script>
-
-const ctx = document.getElementById('carbonChart');
-
-new Chart(ctx, {
-
-    type: 'line',
-
-    data: {
-
-        labels: [
-            {% for record in records %}
-                "{{ record.created_at|date:'d M' }}",
-            {% endfor %}
-        ],
-
-        datasets: [{
-
-            label: 'Carbon Footprint',
-
-            data: [
-                {% for record in records %}
-                    {{ record.total_carbon }},
-                {% endfor %}
-            ],
-
-            borderWidth:3,
-            tension:0.4
-
-        }]
-    }
-
-});
-
-</script>
+        // Set progress bar widths dynamically to resolve inline style linter errors
+        document.querySelectorAll('[data-progress-width]').forEach(el => {
+            el.style.width = el.getAttribute('data-progress-width') + '%';
+        });
+    </script>
+    {% endif %}
 
 </body>
 </html>

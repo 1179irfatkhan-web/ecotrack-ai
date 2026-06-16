@@ -1,78 +1,11 @@
-from django.http import HttpResponse
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer
-)
-from reportlab.lib.styles import getSampleStyleSheet
+from django.contrib.auth.decorators import login_required
+from calculator.services import CarbonService
+from .services import PDFService
 
-from calculator.models import CarbonRecord
-
-
+@login_required
 def generate_report(request):
-
-    response = HttpResponse(
-        content_type='application/pdf'
-    )
-
-    response[
-        'Content-Disposition'
-    ] = 'attachment; filename="EcoTrack_Report.pdf"'
-
-    doc = SimpleDocTemplate(response)
-
-    styles = getSampleStyleSheet()
-
-    story = []
-
-    story.append(
-        Paragraph(
-            "EcoTrack AI Sustainability Report",
-            styles['Title']
-        )
-    )
-
-    story.append(Spacer(1,20))
-
-    latest = CarbonRecord.objects.last()
-
-    if latest:
-
-        story.append(
-            Paragraph(
-                f"Transport: {latest.transport_km} km",
-                styles['Normal']
-            )
-        )
-
-        story.append(
-            Paragraph(
-                f"Electricity: {latest.electricity_units}",
-                styles['Normal']
-            )
-        )
-
-        story.append(
-            Paragraph(
-                f"Meat Meals: {latest.meat_meals}",
-                styles['Normal']
-            )
-        )
-
-        story.append(
-            Paragraph(
-                f"Waste: {latest.waste_kg} kg",
-                styles['Normal']
-            )
-        )
-
-        story.append(
-            Paragraph(
-                f"<b>Total Carbon:</b> {latest.total_carbon} kg CO₂",
-                styles['Normal']
-            )
-        )
-
-    doc.build(story)
-
-    return response
+    # Retrieve only the logged-in user's carbon records
+    records = CarbonService.get_user_records(request.user)
+    
+    # Delegate to PDFService to generate the styled report
+    return PDFService.build_sustainability_report(request.user, records)

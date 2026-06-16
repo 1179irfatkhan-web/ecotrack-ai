@@ -11,24 +11,37 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a0!*95is+idx!w7mq@+b@+odk66nxjy$de*y2zhl&416tiwy3x'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-a0!*95is+idx!w7mq@+b@+odk66nxjy$de*y2zhl&416tiwy3x')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = [
-    "https://ecotrack-ai-production.up.railway.app",
-]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '*').split(',') if host.strip()]
+
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'https://ecotrack-ai-production.up.railway.app').split(',') if origin.strip()]
+
+# Security Headers & Cookie Protection
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'same-origin'
+
+# Cookies secure configurations only on HTTPS (handled via DEBUG flag for local flexibility)
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = not DEBUG
+
 
 
 # Application definition
@@ -43,7 +56,6 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
-    'users',
     'calculator',
     'dashboard',
     'ai_coach',

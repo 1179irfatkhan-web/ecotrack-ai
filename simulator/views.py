@@ -1,43 +1,37 @@
 from django.shortcuts import render
-from .forms import SimulatorForm
 from django.contrib.auth.decorators import login_required
-
-
+from .forms import SimulatorForm
+from calculator.services import CarbonService
 
 @login_required
 def simulator_view(request):
-
     current_total = None
     future_total = None
     savings = None
     percentage = None
 
     if request.method == "POST":
-
         form = SimulatorForm(request.POST)
-
         if form.is_valid():
+            # Format inputs to match CarbonService requirements
+            current_data = {
+                "transport_km": form.cleaned_data["current_transport"],
+                "electricity_units": form.cleaned_data["current_electricity"],
+                "meat_meals": form.cleaned_data["current_meat"],
+                "waste_kg": form.cleaned_data["current_waste"],
+            }
+            future_data = {
+                "transport_km": form.cleaned_data["future_transport"],
+                "electricity_units": form.cleaned_data["future_electricity"],
+                "meat_meals": form.cleaned_data["future_meat"],
+                "waste_kg": form.cleaned_data["future_waste"],
+            }
 
-            current_total = (
-                form.cleaned_data["current_transport"] * 0.21 +
-                form.cleaned_data["current_electricity"] * 0.82 +
-                form.cleaned_data["current_meat"] * 3.3 +
-                form.cleaned_data["current_waste"] * 0.57
-            )
-
-            future_total = (
-                form.cleaned_data["future_transport"] * 0.21 +
-                form.cleaned_data["future_electricity"] * 0.82 +
-                form.cleaned_data["future_meat"] * 3.3 +
-                form.cleaned_data["future_waste"] * 0.57
-            )
-
-            savings = current_total - future_total
-
-            percentage = (
-                savings / current_total * 100
-            ) if current_total else 0
-
+            current_total = CarbonService.calculate_carbon(current_data)
+            future_total = CarbonService.calculate_carbon(future_data)
+            
+            savings = round(current_total - future_total, 2)
+            percentage = round((savings / current_total * 100), 2) if current_total > 0 else 0.0
     else:
         form = SimulatorForm()
 
@@ -46,9 +40,9 @@ def simulator_view(request):
         "simulator.html",
         {
             "form": form,
-            "current_total": round(current_total,2) if current_total else None,
-            "future_total": round(future_total,2) if future_total else None,
-            "savings": round(savings,2) if savings else None,
-            "percentage": round(percentage,2) if percentage else None,
+            "current_total": current_total,
+            "future_total": future_total,
+            "savings": savings,
+            "percentage": percentage,
         }
     )

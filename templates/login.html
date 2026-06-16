@@ -1,140 +1,320 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | EcoTrack AI</title>
 
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
     <style>
-        body{
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background:linear-gradient(135deg,#0f172a,#1e293b,#0ea5e9);
-            font-family:'Segoe UI',sans-serif;
+        :root {
+            --primary-glow: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0) 50%);
+            --secondary-glow: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0) 50%);
         }
 
-        .login-card{
-            width:100%;
-            max-width:420px;
-            background:rgba(255,255,255,0.12);
-            backdrop-filter:blur(15px);
-            border:1px solid rgba(255,255,255,0.2);
-            border-radius:20px;
-            padding:35px;
-            color:white;
-            box-shadow:0 8px 32px rgba(0,0,0,0.3);
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #0f172a;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            color: #f8fafc;
         }
 
-        .logo{
-            width:80px;
-            height:80px;
-            background:white;
-            color:#0ea5e9;
-            border-radius:50%;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            margin:auto;
-            font-size:32px;
-            margin-bottom:20px;
+        /* Ambient Glow Backgrounds */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            top: -200px;
+            left: -200px;
+            background: var(--primary-glow);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        h2{
-            text-align:center;
-            font-weight:700;
-            margin-bottom:25px;
+        body::after {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            bottom: -200px;
+            right: -200px;
+            background: var(--secondary-glow);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .form-control{
-            background:rgba(255,255,255,0.15);
-            border:none;
-            color:white;
-            padding:12px;
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            z-index: 1;
         }
 
-        .form-control:focus{
-            background:rgba(255,255,255,0.2);
-            color:white;
-            box-shadow:none;
-            border:1px solid #38bdf8;
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-login{
-            background:#0ea5e9;
-            border:none;
-            padding:12px;
-            font-weight:600;
-            border-radius:10px;
-            transition:0.3s;
+        .logo-container {
+            text-align: center;
+            margin-bottom: 24px;
         }
 
-        .btn-login:hover{
-            background:#0284c7;
-            transform:translateY(-2px);
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #10b981, #0ea5e9);
+            color: white;
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            font-size: 28px;
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2);
         }
 
-        a{
-            color:#7dd3fc;
-            text-decoration:none;
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+            color: white;
         }
 
-        a:hover{
-            color:white;
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
         }
 
-        .divider{
-            text-align:center;
-            margin:20px 0;
-            color:#ddd;
+        /* Form Controls Styling */
+        form p {
+            margin-bottom: 18px;
         }
 
-        label{
-            margin-bottom:5px;
-            font-weight:500;
+        label {
+            display: inline-block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        input {
+            background: rgba(15, 23, 42, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 12px !important;
+            padding: 12px 16px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            transition: all 0.3s ease !important;
+            font-size: 0.95rem;
+        }
+
+        input:focus {
+            outline: none !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .helptext {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-login:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        a:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 24px 0;
+            color: #475569;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .divider:not(:empty)::before {
+            margin-right: .5em;
+        }
+
+        .divider:not(:empty)::after {
+            margin-left: .5em;
+        }
+
+        .register-prompt {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #475569;
+            font-size: 0.85rem;
+            z-index: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Screen reader instructions */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
         }
     </style>
 </head>
 
 <body>
 
-<div class="login-card">
+    <header class="sr-only">
+        <h1>EcoTrack AI - Authentication Page</h1>
+    </header>
 
-    <div class="logo">
-        <i class="fas fa-user"></i>
-    </div>
+    <main>
+        <section class="login-card" aria-labelledby="login-title">
+            <div class="logo-container">
+                <div class="logo-icon" aria-hidden="true">
+                    <i class="fas fa-leaf"></i>
+                </div>
+            </div>
 
-    <h2>Welcome Back</h2>
+            <h1 id="login-title">Welcome Back</h1>
+            <p class="subtitle">Access your personal carbon coach</p>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+            {% if messages %}
+                <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success p-3 rounded-3 mb-4" role="alert">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-        <button type="submit" class="btn btn-login w-100">
-            <i class="fas fa-sign-in-alt me-2"></i> Login
-        </button>
-    </form>
+            <form method="POST" autocomplete="on">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger p-3 rounded-3 mb-4" role="alert">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-    <div class="divider">
-        ─── OR ───
-    </div>
+                {{ form.as_p }}
 
-    <div class="text-center">
-        <p class="mb-0">
-            Don't have an account?
-        </p>
-        <a href="/register/">
-            Create New Account
-        </a>
-    </div>
+                <button type="submit" class="btn btn-login w-100" aria-label="Sign in to your account">
+                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i> Login
+                </button>
+            </form>
 
-</div>
+            <div class="divider" role="presentation">or</div>
+
+            <div class="register-prompt">
+                <p class="mb-1">Don't have an account?</p>
+                <a href="/register/" aria-label="Create a new account on EcoTrack AI">
+                    Create New Account
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 EcoTrack AI • Sustainable Living Awareness Platform</p>
+    </footer>
+
+    <!-- Script to ensure proper accessibility labels for generated inputs -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Locate form controls generated by Django as_p
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (name === 'username') {
+                    input.setAttribute('aria-label', 'Username');
+                    input.setAttribute('placeholder', 'Enter username');
+                    input.setAttribute('required', 'true');
+                } else if (name === 'password') {
+                    input.setAttribute('aria-label', 'Password');
+                    input.setAttribute('placeholder', 'Enter password');
+                    input.setAttribute('required', 'true');
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
-```
