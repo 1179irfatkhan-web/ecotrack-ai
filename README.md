@@ -50,30 +50,26 @@ graph TD
 
 ### Login & Registration Interface
 <p align="center">
-  <img width="48%" alt="Login Screen" src="https://github.com/user-attachments/assets/97bf7659-e763-4032-aea3-38426105bea0" />
-  &nbsp;
-  <img width="48%" alt="Register Screen" src="https://github.com/user-attachments/assets/11664252-c392-4930-979e-06e67df7fde4" />
+<img width="1360" height="633" alt="login_screen_1782027240997" src="https://github.com/user-attachments/assets/bb07862f-dd5c-4f3c-bb46-c0d9c4f08010" />
+
 </p>
 
 ### Home & Calculator Inputs
 <p align="center">
-  <img width="48%" alt="Calculator Screen" src="https://github.com/user-attachments/assets/296fafa3-05fd-427e-b99b-ffb03bf0d9b9" />
-  &nbsp;
-  <img width="48%" alt="Result Advice Screen" src="https://github.com/user-attachments/assets/b205eae3-b372-42a3-bd77-2969d2cce910" />
+<img width="1360" height="1985" alt="calculator_screen_1782027395454" src="https://github.com/user-attachments/assets/f40ac021-3731-47b6-a079-d8582eae0c38" />
+
 </p>
 
 ### Sustainability Dashboard & Trends
 <p align="center">
-  <img width="48%" alt="Dashboard Overview" src="https://github.com/user-attachments/assets/7cf1de3d-964d-438c-a4c3-7d3d39a75011" />
-  &nbsp;
-  <img width="48%" alt="Dashboard History" src="https://github.com/user-attachments/assets/6718a9d4-c5d1-42a6-821a-4f4ebaf29d38" />
+<img width="1360" height="2557" alt="dashboard_overview_1782027405229" src="https://github.com/user-attachments/assets/80385f25-7ace-4fb9-969f-49cf9204372b" />
+
 </p>
 
 ### Carbon Reduction Simulator Comparison
 <p align="center">
-  <img width="48%" alt="Simulator Form" src="https://github.com/user-attachments/assets/9e5bb654-3fb1-4d88-83c5-08c8952b7623" />
-  &nbsp;
-  <img width="48%" alt="Simulator Result" src="https://github.com/user-attachments/assets/6c35f37d-1d98-4050-b8fc-948ac57db0b0" />
+<img width="1360" height="670" alt="simulator_result_1782027707791" src="https://github.com/user-attachments/assets/fc040d8a-0fa4-48b2-8683-9fcdecfc98bb" />
+
 </p>
 
 ---
