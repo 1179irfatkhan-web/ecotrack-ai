@@ -157,3 +157,16 @@ class DashboardTests(TestCase):
         # (71.05 - 85.24) / 71.05 * 100 = -19.97% -> 20.0% increase
         self.assertEqual(res['improvement_pct'], 20.0)
 
+    def test_get_impact_summary(self):
+        """Test that get_impact_summary calculates CO2 savings and percentage reductions correctly."""
+        from dashboard.services import SustainabilityService
+        stats = {
+            'total_records': 2,
+            'total_carbon': 156.29
+        }
+        records_list = [self.record2, self.record1]
+        res = SustainabilityService.get_impact_summary(self.user1, records_list, stats)
+        self.assertEqual(res['co2_saved'], 83.71)
+        self.assertEqual(res['reduction_pct'], -20.0)
+
+

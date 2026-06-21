@@ -7,7 +7,7 @@ from .services import SustainabilityService
 @login_required
 def dashboard_view(request):
     # Retrieve user records, limited to the latest 15 entries for maximum database efficiency
-    records = CarbonService.get_user_records(request.user)[:15]
+    records = list(CarbonService.get_user_records(request.user)[:15])
     
     # Retrieve complete aggregate stats (calculated at DB-level)
     stats = CarbonService.get_user_stats(request.user)

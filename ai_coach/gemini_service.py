@@ -1,5 +1,4 @@
 import os
-import google.generativeai as genai
 
 def get_ai_advice(data):
     # Calculate rule-based sustainability score
@@ -33,8 +32,8 @@ Recommendations:
         return rule_based_advice
 
     try:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        from google import genai
+        client = genai.Client(api_key=api_key)
         prompt = (
             f"Analyze this carbon footprint data for an individual and provide personalized, friendly, "
             f"and actionable advice to reduce their footprint.\n"
@@ -47,7 +46,10 @@ Recommendations:
             f"Provide a brief overview of their impact, a score review ({score}/100), "
             f"and 3-5 concrete bullet points on what they can improve."
         )
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
         return response.text
     except Exception as e:
         return f"{rule_based_advice}\n\n(Note: Live AI Advice offline: {str(e)})"

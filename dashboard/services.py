@@ -1,4 +1,3 @@
-import os
 from django.utils import timezone
 from django.db.models import Sum, Avg, Count
 from django.http import HttpResponse
@@ -163,11 +162,18 @@ class SustainabilityService:
         Returns:
             dict: {goal, current_total, progress_pct, status}
         """
+        import datetime
         now = timezone.now()
+        start_of_month = timezone.make_aware(datetime.datetime(now.year, now.month, 1))
+        if now.month == 12:
+            start_of_next_month = timezone.make_aware(datetime.datetime(now.year + 1, 1, 1))
+        else:
+            start_of_next_month = timezone.make_aware(datetime.datetime(now.year, now.month + 1, 1))
+
         current_month_records = CarbonRecord.objects.filter(
             user=user,
-            created_at__year=now.year,
-            created_at__month=now.month
+            created_at__gte=start_of_month,
+            created_at__lt=start_of_next_month
         )
         current_total = current_month_records.aggregate(sum_carbon=Sum('total_carbon'))['sum_carbon'] or 0.0
         current_total = round(current_total, 2)
@@ -317,7 +323,7 @@ class SustainabilityService:
         co2_saved = max(0.0, co2_saved)
         
         # Reductions: compare first record (oldest) against latest (newest)
-        first_record = records[len(records)-1] if len(records) > 0 else None
+        first_record = CarbonRecord.objects.filter(user=user).order_by('created_at', 'id').first()
         latest_record = records[0] if len(records) > 0 else None
         
         if first_record and latest_record and first_record.id != latest_record.id and first_record.total_carbon > 0:
@@ -405,22 +411,30 @@ class PDFService:
 
         story = []
 
-        # Title Block
-        story.append(Paragraph("🌱 EcoTrack AI", title_style))
+        # Title Block (Emojis removed to ensure proper Helvetica font printing compatibility)
+        story.append(Paragraph("EcoTrack AI", title_style))
         story.append(Paragraph(f"Official Carbon & Sustainability Report for <b>{user.username}</b> | Generated dynamically", subtitle_style))
         story.append(Spacer(1, 10))
 
         # Executive Summary Section
         story.append(Paragraph("Executive Summary", h2_style))
         
+        # Evaluate QuerySet once to avoid repeated DB calls
+        records = list(records)
+
         if records:
             latest = records[0]
             score = SustainabilityService.calculate_sustainability_score(latest)
-            stats = CarbonRecord.objects.filter(user=user).aggregate(
-                total=Sum('total_carbon'),
-                avg=Avg('total_carbon'),
-                count=Count('id')
-            )
+            
+            # Compute stats directly from the evaluated list to eliminate redundant database query
+            count = len(records)
+            total = sum(r.total_carbon for r in records)
+            avg = total / count if count > 0 else 0.0
+            stats = {
+                'total': total,
+                'avg': avg,
+                'count': count
+            }
             
             summary_text = (
                 f"This report summarizes your personal carbon footprint analytics across {stats['count']} recorded entries. "
@@ -436,10 +450,10 @@ class PDFService:
             
             data = [
                 [Paragraph("Emission Source", table_header_style), Paragraph("Quantity / Input Value", table_header_style), Paragraph("Calculated CO₂ Impact", table_header_style)],
-                [Paragraph("🚗 Transportation", body_style), Paragraph(f"{latest.transport_km} km", body_style), Paragraph(f"{round(latest.transport_km * 0.21, 2)} kg", body_style)],
-                [Paragraph("⚡ Electricity Usage", body_style), Paragraph(f"{latest.electricity_units} kWh", body_style), Paragraph(f"{round(latest.electricity_units * 0.82, 2)} kg", body_style)],
-                [Paragraph("🥩 Dietary Meals (Meat)", body_style), Paragraph(f"{latest.meat_meals} meals", body_style), Paragraph(f"{round(latest.meat_meals * 3.3, 2)} kg", body_style)],
-                [Paragraph("🗑️ Waste Output", body_style), Paragraph(f"{latest.waste_kg} kg", body_style), Paragraph(f"{round(latest.waste_kg * 0.57, 2)} kg", body_style)],
+                [Paragraph("Transportation", body_style), Paragraph(f"{latest.transport_km} km", body_style), Paragraph(f"{round(latest.transport_km * 0.21, 2)} kg", body_style)],
+                [Paragraph("Electricity Usage", body_style), Paragraph(f"{latest.electricity_units} kWh", body_style), Paragraph(f"{round(latest.electricity_units * 0.82, 2)} kg", body_style)],
+                [Paragraph("Dietary Meals (Meat)", body_style), Paragraph(f"{latest.meat_meals} meals", body_style), Paragraph(f"{round(latest.meat_meals * 3.3, 2)} kg", body_style)],
+                [Paragraph("Waste Output", body_style), Paragraph(f"{latest.waste_kg} kg", body_style), Paragraph(f"{round(latest.waste_kg * 0.57, 2)} kg", body_style)],
                 [Paragraph("<b>Total Combined Impact</b>", body_style), Paragraph("", body_style), Paragraph(f"<b>{latest.total_carbon} kg CO₂</b>", body_style)]
             ]
             

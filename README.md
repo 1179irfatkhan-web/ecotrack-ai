@@ -1,6 +1,6 @@
 # 🌱 EcoTrack AI - Carbon Footprint Awareness Platform
 
-EcoTrack AI is a production-grade Django web application designed to help individuals measure, track, and simulate changes in their carbon footprint. Powered by scientific emission factors and intelligent, personalized coaching, EcoTrack AI bridges the gap between environmental awareness and actionable sustainability.
+EcoTrack AI is a production-grade Django web application designed to help individuals measure, track, and simulate changes in their carbon footprint. Powered by scientific emission factors, index-optimized database queries, and intelligent, personalized coaching, EcoTrack AI bridges the gap between environmental awareness and actionable sustainability.
 
 ---
 
@@ -8,12 +8,21 @@ EcoTrack AI is a production-grade Django web application designed to help indivi
 
 * **Authentication & Role Protection**: Secure user registration, login, and session-protected dashboards with secure cookie settings.
 * **Carbon Footprint Calculator**: Instantly computes CO₂ emissions across transportation, electricity, diet, and waste using precise conversion metrics.
-* **Intelligent Sustainability Coach**: Features an AI Sustainability Coach (integrates Google Gemini API) to offer contextual, tailored lifestyle tips with a graceful, rule-based local fallback.
+* **Intelligent Sustainability Coach**: Features an AI Sustainability Coach (integrates the new **Google GenAI SDK** and utilizes `'gemini-2.5-flash'`) to offer contextual, tailored lifestyle tips with a graceful, rule-based local fallback.
 * **Interactive Analytics Dashboard**: Modern graphs (using Chart.js) visualizing historical trends, sector emission breakdowns, and dynamic sustainability scores (0-100).
 * **Carbon Reduction Simulator**: A side-by-side lifestyle comparison tool that models prospective emission cuts and quantifies environmental impact.
-* **PDF Sustainability Reports**: Generates professional, highly-styled ReportLab PDF summaries featuring executive overviews, data isolation, and trend history.
+* **PDF Sustainability Reports**: Generates professional, highly-styled ReportLab PDF summaries featuring executive overviews, data isolation, and trend history. Emojis have been fully cleaned to ensure standard Helvetica compatibility in all readers.
 * **Premium SaaS UI Layout**: Built with a sleek slate-dark glassmorphism visual hierarchy, interactive animations, and responsive accessibility indicators (WCAG compliant).
 * **Railway Integration Ready**: Fully pre-configured for automated Railway containerized builds, database migrations, and static assets hosting via Whitenoise.
+
+---
+
+## ⚡ Performance & Optimization Standards
+
+* **Evaluation Caching**: Evaluates Django QuerySets to Python lists immediately in views, avoiding N+1 lookup database overhead.
+* **Database Index Utilization**: Optimized monthly targets filtering using index range queries (`created_at__gte` and `created_at__lt`) rather than database-level year/month extracts, allowing indexing tools to execute search scans at maximum speed.
+* **True Oldest Comparison**: Aggregated reduction statistics now query the absolute first database record (with ID tie-breaking logic) to compare historical changes accurately.
+* **SEO & Heading Accessibility**: Implemented unique, descriptive SEO description meta tags on all endpoints and corrected header semantic structures to a single visible `<h1>` per page.
 
 ---
 
@@ -126,7 +135,7 @@ Visit the application in your browser at `http://localhost:8000`.
 
 ## 🧪 Running Automated Tests
 
-EcoTrack AI includes 20 comprehensive unit tests covering validation, calculations logic, views routing, login protection, and security isolation.
+EcoTrack AI includes 29 comprehensive unit tests covering validation, calculations logic, views routing, login protection, safety isolation, and AI recommendations.
 ```bash
 python manage.py test
 ```
@@ -138,15 +147,25 @@ python manage.py test
 EcoTrack AI is fully prepared for zero-configuration deployments on Railway:
 1. **Procfile**: Gunicorn WSGI startup configuration.
 2. **build.sh**: Configured to install dependencies, collect static files and execute migrations automatically during deploy pipelines.
-3. **Whitenoise**: Integrated for fast, reliable static file serving without external bucket hosting.
+3. **Whitenoise**: Integrated for fast, reliable static file serving without external hosting.
 
-### Deployment Environment variables:
-When deploying, make sure you configure the following variables in the Railway console:
-* `SECRET_KEY`: Long, random secret key.
-* `DEBUG`: `False` (forces secure HTTPS flags and turns off debug mode pages).
-* `ALLOWED_HOSTS`: `<your-railway-domain>.up.railway.app`
-* `CSRF_TRUSTED_ORIGINS`: `https://<your-railway-domain>.up.railway.app`
-* `GEMINI_API_KEY`: Your Gemini API access key.
+### How and Where to add Deployment Environment Variables on Railway:
+
+To ensure the production deployment handles routing, security, and live AI recommendations correctly, you need to add your environment variables inside the Railway Dashboard:
+
+1. **Open the Railway Project**: Log into [Railway.app](https://railway.app/) and click into your project canvas containing your deployed service card.
+2. **Select your Service**: Click on the specific service card matching your deployed repository (e.g. `carbonaware` or `carbonfootprint`).
+3. **Navigate to the Variables Tab**: Inside the service management pane on the right-hand side, click on the **Variables** tab (located next to *Settings* and *Deployments*).
+4. **Add Variables**: Click the **+ Add Variable** button to input each key-value pair, or use **Raw Editor** to copy-paste the values directly:
+   
+   Configure the following fields:
+   * `SECRET_KEY`: *[A long, secure, randomized string]*
+   * `DEBUG`: `False` (forces secure HTTPS flags and turns off debug pages)
+   * `ALLOWED_HOSTS`: `<your-railway-domain>.up.railway.app`
+   * `CSRF_TRUSTED_ORIGINS`: `https://<your-railway-domain>.up.railway.app`
+   * `GEMINI_API_KEY`: *[Your active Gemini API key: e.g. AQ.Ab8R...]*
+
+5. **Deploy**: Click **Save**. Railway will automatically trigger a redeploy of your application with the new configuration.
 
 ---
 
