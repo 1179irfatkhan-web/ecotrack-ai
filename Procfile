@@ -1,1 +1,1 @@
-web: gunicorn carbonaware.wsgi:application
+web: python manage.py migrate && gunicorn carbonaware.wsgi:application
